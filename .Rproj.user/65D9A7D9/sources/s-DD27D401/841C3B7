@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1551408283758.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "502291481",
+    "id" : "841C3B7",
+    "lastKnownWriteTime" : 1551409165,
+    "last_content_update" : 1551409165245,
+    "path" : "~/GitHub/ref-gender/refgender_analysis.Rmd",
+    "project_path" : "refgender_analysis.Rmd",
+    "properties" : {
+        "cursorPosition" : "126,32",
+        "scrollLine" : "113"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

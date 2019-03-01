@@ -1,0 +1,31 @@
+"0","```r
+model.lmer <- lmerTest::lmer(total_techs ~ numfemalerefs + (1|teamcount), data = df)
+summary(model.lmer)
+```"
+"1","Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
+Formula: total_techs ~ numfemalerefs + (1 | teamcount)
+   Data: df
+
+REML criterion at convergence: -19796.4
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-0.4163 -0.1592 -0.1131 -0.0980 18.8507 
+
+Random effects:
+ Groups    Name        Variance  Std.Dev.
+ teamcount (Intercept) 0.0003022 0.01738 
+ Residual              0.0244815 0.15647 
+Number of obs: 23011, groups:  teamcount, 921
+
+Fixed effects:
+               Estimate Std. Error        df t value Pr(>|t|)    
+(Intercept)   1.932e-02  1.694e-03 3.173e+03   11.40   <2e-16 ***
+numfemalerefs 1.676e-03  9.577e-04 2.143e+04    1.75   0.0801 .  
+---
+Signif. codes:  0 â€˜***â€™ 0.001 â€˜**â€™ 0.01 â€˜*â€™ 0.05 â€˜.â€™ 0.1 â€˜ â€™ 1
+
+Correlation of Fixed Effects:
+            (Intr)
+numfemalrfs -0.715
+"

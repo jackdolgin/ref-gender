@@ -1,0 +1,33 @@
+"0","```r
+model.lmer3 <- glmer((total_techs) ~ numfemalerefs + (1+total_fouls|teamcount), data = df, family=poisson(link=\"log\"))
+summary(model.lmer3)
+```"
+"1","Generalized linear mixed model fit by maximum likelihood (Laplace Approximation) ['glmerMod']
+ Family: poisson  ( log )
+Formula: (total_techs) ~ numfemalerefs + (1 + total_fouls | teamcount)
+   Data: df
+
+     AIC      BIC   logLik deviance df.resid 
+  4682.4   4722.6  -2336.2   4672.4    23002 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-0.7813 -0.1319 -0.1044 -0.0980 13.0702 
+
+Random effects:
+ Groups    Name        Variance Std.Dev. Corr 
+ teamcount (Intercept) 3.807539 1.9513        
+           total_fouls 0.005013 0.0708   -0.93
+Number of obs: 23007, groups:  teamcount, 921
+
+Fixed effects:
+              Estimate Std. Error z value Pr(>|z|)    
+(Intercept)   -4.49250    0.10745 -41.812   <2e-16 ***
+numfemalerefs  0.08032    0.04240   1.894   0.0582 .  
+---
+Signif. codes:  0 â€˜***â€™ 0.001 â€˜**â€™ 0.01 â€˜*â€™ 0.05 â€˜.â€™ 0.1 â€˜ â€™ 1
+
+Correlation of Fixed Effects:
+            (Intr)
+numfemalrfs -0.528
+"

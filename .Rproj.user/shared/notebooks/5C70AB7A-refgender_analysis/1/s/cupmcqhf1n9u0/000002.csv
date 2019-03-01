@@ -1,0 +1,32 @@
+"0","```r
+model.glmer2 <- glmer(techfoulbinary ~ numfemalerefs + (1|teamcount), data = df, family = binomial(\"probit\"))
+summary(model.glmer2)
+```"
+"1","Generalized linear mixed model fit by maximum likelihood (Laplace Approximation) ['glmerMod']
+ Family: binomial  ( probit )
+Formula: techfoulbinary ~ numfemalerefs + (1 | teamcount)
+   Data: df
+
+     AIC      BIC   logLik deviance df.resid 
+  4447.6   4471.7  -2220.8   4441.6    23008 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-0.2909 -0.1397 -0.1105 -0.1037  7.6091 
+
+Random effects:
+ Groups    Name        Variance Std.Dev.
+ teamcount (Intercept) 0.1187   0.3445  
+Number of obs: 23011, groups:  teamcount, 921
+
+Fixed effects:
+              Estimate Std. Error z value Pr(>|z|)    
+(Intercept)   -2.23559    0.04178 -53.513   <2e-16 ***
+numfemalerefs  0.03400    0.01849   1.839   0.0659 .  
+---
+Signif. codes:  0 â€˜***â€™ 0.001 â€˜**â€™ 0.01 â€˜*â€™ 0.05 â€˜.â€™ 0.1 â€˜ â€™ 1
+
+Correlation of Fixed Effects:
+            (Intr)
+numfemalrfs -0.584
+"

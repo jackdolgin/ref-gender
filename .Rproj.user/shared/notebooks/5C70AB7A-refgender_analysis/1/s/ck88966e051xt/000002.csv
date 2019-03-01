@@ -1,0 +1,2 @@
+"0","model.glmer <- glmer(total_techs ~ numfemalerefs * numfemalecoaches + "
+"0","                       (1|Home_Team) + (1|Away_Team), data = df, family=poisson(link=""log""))"
