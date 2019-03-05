@@ -6,6 +6,12 @@ output:
   html_notebook: default
 ---
 
+Jack laying out the hypotheses (from Feb. 24, 2017(!)), and I've inserted brackets for the corresponding code/column:
+
+We predict male coaches will act more aggressively the more males referees there are in a game, and will therefore tend to have more male referees present [3 - mean(numfemalerefs)] when they receive technical fouls [filter %>% nummaletechs > 0] than when they do not receive any [filter %>% nummaletechs == 0]. Similarly, we also predict more female referees to be present [mean(numfemalerefs)] when female head coaches receive technical fouls [filter %>% numfemaletechs > 0] than when they do not receive any [filter %>% numfemaletechs == 0]. Thirdly, we also predict the number of technical fouls attributed to female coaches [sum(numfemaletechs)/(sum(nummaletechs) + sum(numfemaletechs)] to be lower than women coaches' makeup of all coaches in NCAA women's basketball [sum(numfemalecoaches)/(nrow()*2)]. Likewise, we expect men head coaches to receive a greater proportion of all the technical fouls [sum(nummaletechs)/(sum(nummaletechs) + sum(numfemaletechs))] than their makeup of all coaches [1-(sum(numfemalecoaches)/(nrow() + nrow()))].
+
+As an exploratory analysis, I'm also curious what the effects would be if we changed the dependent variable from coach technical fouls to total fouls called on the team [numfemaletotalfouls and nummaletotalfouls].
+
 ##Import data
 ```{r}
 library(data.table)
