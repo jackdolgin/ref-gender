@@ -20,6 +20,7 @@ library(dplyr)
 library(lme4)
 
 raw.data <- fread('ref_and_coach_data.csv')
+raw.data <- allgames6
 ```
 
 ##Plot some data
