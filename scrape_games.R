@@ -4,6 +4,7 @@ library("dplyr")
 library("tools")
 library("stringr")
 library("tools")
+library("magrittr")
 
 
 games_df <- setNames(data.frame(matrix(ncol=39)), c("teamcount", "gamecount", "away_total_techs", "home_total_techs",
@@ -24,12 +25,6 @@ games_df <- setNames(data.frame(matrix(ncol=39)), c("teamcount", "gamecount", "a
                                                   "Away_Team", "Home_Team", "Ref_Name_Length", "Team_Num"))
 
 games_df <- games_df[FALSE,]
-#skip louisina tech with multiple head coaches
-# skip maryland because script confusing link to it and link to loyola marymount; s %>% follow_link(338) %>% read_html(); i = 158; 336 in 2010; 336 in 2011; 335 in 2012; 335 in 2013; i = 156 in 2010; 156 in 2011; 155 in 2012; 155 in 2013; 
-#skip texas for getting confused with north texas s %>% follow_link(463) %>% read_html(); i = 286; 462 in 2010; 461 in 2011; 461 in 2012; 463 in 2013; i = 282 in 2010; 281 in 2011; 281 in 2012; 283 in 2013;
-#skip utah #s %>% follow_link(500) %>% read_html(); i = 320; 495 in 2010; 494 in 2011; 494 in 2012; 496 in 2013; i = 315 in 2010; 314 in 2011; 314 in 2012; 316 in 2013;
-#skip washington s %>% follow_link(512) %>% read_html(); i = 331; 507 in 2010; 506 in 2011; 506 in 2012; 508 in 2013; i = 327 in 2010; 326 in 2011; 326 in 2012; 328 in 2013; 332 in 2014
-# lasti <- as.numeric(games_df[nrow(games_df),"Team_Num"])
 
 gamecount <- 0
 teamcount <- 0
@@ -37,7 +32,7 @@ teamcount <- 0
 for (seasoncount in 0:8){
   
   landing_page <- read_html(paste0("https://stats.ncaa.org/team/inst_team_list?academic_year=201", seasoncount, "&conf_id=-1&division=1&sport_code=WBB"))
-  s <- html_session(paste0("https://stats.ncaa.org/team/inst_team_list?academic_year=201", seasoncount, "&conf_id=-1&division=1&sport_code=WBB"))
+  season <- html_session(paste0("https://stats.ncaa.org/team/inst_team_list?academic_year=201", seasoncount, "&conf_id=-1&division=1&sport_code=WBB"))
   
   all_teams <- landing_page %>%
     html_nodes("table") %>%
@@ -63,7 +58,7 @@ for (seasoncount in 0:8){
         } else{
           item <- teamslooping[i]
         }
-        team_home <- s %>% follow_link(item) %>% read_html()
+        team_home <- season %>% follow_link(item) %>% read_html()
         marshall <- team_home %>%
           html_nodes("legend") %>%
           html_text()
@@ -173,10 +168,8 @@ for (seasoncount in 0:8){
           games_df[(nrow(games_df) + 1),] <- c(teamcount, gamecount, rep("Trial Error", ncol(games_df) - 2))
         })
     }
-    if (teamcount == 5 | teamcount %% 50 == 0){
-      write.csv(games_df, file = "games_df_in_progress.csv", row.names=FALSE)}
   }
-  write.csv(games_df, file = "games_df_in_progress.csv", row.names=FALSE)
+  write.csv(games_df, file = "games_df.csv", row.names=FALSE)
 }
 
 
@@ -197,7 +190,7 @@ games_df <- read.csv("tommy3.csv", skip = 1, col.names = c("junk", "away_total_t
                                                          "City_State_Arena", "Attendance",
                                                          "Away_Team", "Home_Team", "Ref_Name_Length", "Team_Num"))
 
-games_df <- games_df %>%
+games_df %<>%
   filter(!str_detect(as.character(games_df$Away_Team), "Do Not Use") |       # Removes any games with the title "Do Not Use"
            !str_detect(as.character(games_df$Home_Team), "Do Not Use")) %>%
   rowwise() %>%
