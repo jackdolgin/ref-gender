@@ -1,9 +1,10 @@
 ---
 title: "Fouls in Women's Basketball"
 output:
+  html_notebook: default
+  pdf_document: default
   html_document:
     df_print: paged
-  html_notebook: default
 ---
 
 Jack laying out the hypotheses (from Feb. 24, 2017(!)), and I've inserted brackets for the corresponding code/column:
@@ -19,8 +20,7 @@ library(epitools)
 library(dplyr)
 library(lme4)
 
-raw.data <- fread('ref_and_coach_data.csv')
-raw.data <- allgames6
+raw.data <- fread('games_and_coaches_for_stats.csv')
 ```
 
 ##Plot some data
@@ -41,11 +41,14 @@ df <- raw.data %>% select(numfemalerefs, total_fouls, total_techs, numfemalecoac
   #there was a female ref
   mutate(techfoulbinary = (ifelse(total_techs > 0, 1, 0)), 
          femalerefbinary = factor(ifelse(numfemalerefs > 0, 1, 0)),
-         femalecoachbinary = factor(ifelse(numfemalecoaches > 0, 1, 0)))
+         femalecoachbinary = factor(ifelse(numfemalecoaches > 0, 1, 0)),
+         malerefbinary = factor(ifelse(nummalerefs > 0, 1, 0)),
+         malecoachbinary = factor(ifelse(nummalecoaches > 0, 1, 0)),)
 
 ```
 
-##Descriptives stats (with some inferential stats)
+
+## Descriptives stats (with some inferential stats)
 One thing we might be interested in is just a simple measure/question:
   - Does having a single female referee increase the risk of a technical foul?
   
@@ -53,83 +56,134 @@ To look at this, we might want to use the 'relative risk ratio' (RR). This is
 calculated by taking the number of events in condition A over all events in A 
 divided by the number of events in condition B over all events in B.
 
+Not significant whether there was a female ref present or not on whether there was a tech called
+
 ```{r}
-#This is using an epidemiology R library
-#I could change the labels, but I'm tired.
-#Exposed 1 = female ref present
-#Exposed 2 = no female ref present
-#Disease 1 = games w/ technical fouls
-#Disease 2 = gmaes w/o technical fouls
 
 tab <- matrix(c(sum(((df$techfoulbinary[df$femalerefbinary == 1])==1), na.rm = TRUE),
                 sum(((df$techfoulbinary[df$femalerefbinary == 1])==0), na.rm = TRUE),
                 sum(((df$techfoulbinary[df$femalerefbinary == 0])==1), na.rm = TRUE),
                 sum(((df$techfoulbinary[df$femalerefbinary == 0])==0), na.rm = TRUE)),byrow=TRUE,nrow=2)
-epitab(tab,method="riskratio")
-
+mydf <- epitab(tab,method="riskratio")
+mydf <- as.data.frame(mydf[1])
+row.names(mydf) <- c("Female Ref Present", "Female Ref Absent")
+colnames(mydf) <- c("Games w/ Techs", "p0", "Games w/o Techs", "p1", "riskratio", "lower", "upper", "p.value")
+mydf
 ```
 
-##Linear models
-Here, let's see whether the simple prescence of a female ref will increase the likelihood of
-a technical foul being call at all, using a linear model. This is likely to give us the same
-result as the above RR (they are pretty similar when you have such large datasets), but it
-would be nice to see.
+It is significant whether there was a male ref present or not, but the risk ratio is apparently extremely small and therefore the effect is negligible (significant in which direction?)
 
-Again, there doesn't seem to be a significant relationship between a simple binary
-female ref -> increased risk of any technical foul.
+```{r}
+
+tab <- matrix(c(sum(((df$techfoulbinary[df$malerefbinary == 1])==1), na.rm = TRUE),
+                sum(((df$techfoulbinary[df$malerefbinary == 1])==0), na.rm = TRUE),
+                sum(((df$techfoulbinary[df$malerefbinary == 0])==1), na.rm = TRUE),
+                sum(((df$techfoulbinary[df$malerefbinary == 0])==0), na.rm = TRUE)),byrow=TRUE,nrow=2)
+mydf <- epitab(tab,method="riskratio")
+mydf <- as.data.frame(mydf[1])
+row.names(mydf) <- c("Male Ref Present", "Male Ref Absent")
+colnames(mydf) <- c("Games w/ Techs", "p0", "Games w/o Techs", "p1", "riskratio", "lower", "upper", "p.value")
+mydf
+```
+
+
+```{r}
+tab <- matrix(c(sum(((df$techfoulbinary[df$femalecoachbinary == 1])==1), na.rm = TRUE),
+                sum(((df$techfoulbinary[df$femalecoachbinary == 1])==0), na.rm = TRUE),
+                sum(((df$techfoulbinary[df$femalecoachbinary == 0])==1), na.rm = TRUE),
+                sum(((df$techfoulbinary[df$femalecoachbinary == 0])==0), na.rm = TRUE)),byrow=TRUE,nrow=2)
+mydf <- epitab(tab,method="riskratio")
+mydf <- as.data.frame(mydf[1])
+row.names(mydf) <- c("Female Coach Present", "Female Coach Absent")
+colnames(mydf) <- c("Games w/ Techs", "p0", "Games w/o Techs", "p1", "riskratio", "lower", "upper", "p.value")
+mydf
+```
+
+```{r}
+tab <- matrix(c(sum(((df$techfoulbinary[df$malecoachbinary == 1])==1), na.rm = TRUE),
+                sum(((df$techfoulbinary[df$malecoachbinary == 1])==0), na.rm = TRUE),
+                sum(((df$techfoulbinary[df$malecoachbinary == 0])==1), na.rm = TRUE),
+                sum(((df$techfoulbinary[df$malecoachbinary == 0])==0), na.rm = TRUE)),byrow=TRUE,nrow=2)
+mydf <- epitab(tab,method="riskratio")
+mydf <- as.data.frame(mydf[1])
+row.names(mydf) <- c("Male Coach Present", "Male Coach Absent")
+colnames(mydf) <- c("Games w/ Techs", "p0", "Games w/o Techs", "p1", "riskratio", "lower", "upper", "p.value")
+mydf
+```
+
+
+##Linear models
+
+Asks  if there' s at least one female coach, yes or no, at least one female ref, yes or no, and whether there's a technical foul, yes or no; none seem to matter
 ```{r}
 summary(glm(techfoulbinary ~ femalerefbinary*femalecoachbinary, data = df, family = binomial("logit")))
+summary(glm(techfoulbinary ~ malerefbinary*femalecoachbinary, data = df, family = binomial("logit")))
+summary(glm(techfoulbinary ~ femalerefbinary*malecoachbinary, data = df, family = binomial("logit")))
+summary(glm(techfoulbinary ~ malerefbinary*malecoachbinary, data = df, family = binomial("logit")))
+
 ```
 
 ##More complex relationship?
-But maybe I am modeling this in too simple of a manner. It could be that
-rather than any prescence of a female ref increasing the odds of a technical
-foul, that instead the number of female refs increase the odds of any technical
-fouls being called.
-
-Here, we see that there does seem to be a small, but significant effect of the
-number of female refs incluencing whether any technical foul is called.
-We can also calculate the odds ratio from this, $exp(\beta _{1})$, to see 
-whether the increase in female refs on the court results in the increase
-of the odds of any technical foul being called (not the same as the risk/probability).
-For an odds ratio, >1 indicates that your predictor increases the odds of the outcome.
+The more female coaches, the more likely there is to be a technical foul; but it doesn't matter how many female refs there are, and there's no interaction
 ```{r}
 #logistic model
 model1 <- (glm(techfoulbinary ~ numfemalerefs*numfemalecoaches, data = df, family = binomial("logit")))
 summary(model1)
-
+#odds ratio
+exp(model1$coefficients[[2]])
+model1 <- (glm(techfoulbinary ~ nummalerefs*nummfemalecoaches, data = df, family = binomial("logit")))
+summary(model1)
+#odds ratio
+exp(model1$coefficients[[2]])
+model1 <- (glm(techfoulbinary ~ numfemalerefs*nummalecoaches, data = df, family = binomial("logit")))
+summary(model1)
+#odds ratio
+exp(model1$coefficients[[2]])
+model1 <- (glm(techfoulbinary ~ nummalerefs*nummalecoaches, data = df, family = binomial("logit")))
+summary(model1)
 #odds ratio
 exp(model1$coefficients[[2]])
 ```
 
-##More linear relationship?
-Maybe now, though, we might see that the number of female refs on the court
-also increases the number of technical fouls called. 
 
-Here, we don't see a relationship between the total number of technical
-fouls and the total number of female refs, but instead between number of
-female coaches.
+##More linear relationship?
+Number of female coaches significantly correlated with number of technical fouls called, no significance for number of female refs or the interaction
 ```{r}
 summary(glm(total_techs ~ numfemalerefs*numfemalecoaches, data = df, family=poisson(link="log")))
+summary(glm(total_techs ~ nummalerefs*numfemalecoaches, data = df, family=poisson(link="log")))
+summary(glm(total_techs ~ numfemalerefs*nummalecoaches, data = df, family=poisson(link="log")))
+summary(glm(total_techs ~ nummalerefs*nummalecoaches, data = df, family=poisson(link="log")))
+
 ```
+
+
+```{r}
+summary(glm(total_fouls ~ numfemalerefs*numfemalecoaches, data = df, family=poisson(link="log")))
+summary(glm(total_fouls ~ nummalerefs*numfemalecoaches, data = df, family=poisson(link="log")))
+summary(glm(total_fouls ~ numfemalerefs*nummalecoaches, data = df, family=poisson(link="log")))
+summary(glm(total_fouls ~ nummalerefs*nummalecoaches, data = df, family=poisson(link="log")))
+```
+
+
+
 
 #Let's account for some things though.
 One thing we might want to account for, though is the team.
 Maybe a specific team just has more technical fouls called on
 them because their coach is an asshole. The models above treated 
 every game as an independent event, but we know that isn't true.
-A teach (coach) is going to have a behavior pattern that is
+A team (coach) is going to have a behavior pattern that is
 correlated across time. 
 
 Here we can account for that by including 'team' as a random 
 effect. That is, we will account for the correlation pattern
 between each of a team's games.
 
-Let's start with our simplest model and see if the prescence
+Let's start with our simplest model and see if the presence
 of a single female ref on the court will increase the odds of
 any techincal fouls being called.
 
-No.
+Again, significant for coach gender but that's it
 ```{r}
 model.glmer <- glmer(total_techs ~ numfemalerefs * numfemalecoaches + 
                        (1|Home_Team) + (1|Away_Team), data = df, family=poisson(link="log"))
