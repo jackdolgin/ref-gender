@@ -32,7 +32,7 @@ hist(raw.data$numfemalerefs)
 
 ##Make data file a bit smaller to work with
 ```{r}
-df <- raw.data %>% select(numfemalerefs, total_fouls, total_techs, numfemalecoaches, 
+df <- raw.data %>% select(numfemalerefs, total_fouls, total_techs, numfemalecoaches,nummalerefs,nummalecoaches,
                           away_total_points, away_total_techs, away_total_fouls,
                           home_total_techs, home_total_points, home_total_fouls,
                           Home_Team, Away_Team, coach_last_name_home, coach_last_name_away,
@@ -131,7 +131,7 @@ model1 <- (glm(techfoulbinary ~ numfemalerefs*numfemalecoaches, data = df, famil
 summary(model1)
 #odds ratio
 exp(model1$coefficients[[2]])
-model1 <- (glm(techfoulbinary ~ nummalerefs*nummfemalecoaches, data = df, family = binomial("logit")))
+model1 <- (glm(techfoulbinary ~ nummalerefs*numfemalecoaches, data = df, family = binomial("logit")))
 summary(model1)
 #odds ratio
 exp(model1$coefficients[[2]])

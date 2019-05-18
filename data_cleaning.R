@@ -180,6 +180,11 @@ allgames3 <- cbind(allgames2[,1:21], allgamessample, allgames2[,29:39])
 allgames3 <- allgames3 %>% filter(!(is.na(ref_1_first_name) | is.na(ref_3_last_name)))
 
 
+allgames3 <- allgames3 %>%
+  select(-c(teamcount, gamecount, Team_Num)) %>%
+  distinct()
+
+
 usnames <- read.csv("usnames.csv")
 
 ref_gender_more <- function(x, y1, y2, z, g){
@@ -444,11 +449,6 @@ allgames4 <- allgames3 %>%
          numfemalerefs = str_count(refs_together, "F"),
          nummalerefs = str_count(refs_together, "M"))
 
-allgames5 <- allgames4 %>%
-  select(-c(teamcount, gamecount, Team_Num)) %>%
-  distinct()
-
-
 
 coach_gender_more <- function(x, y1, y2, g){
   x %>%
@@ -457,7 +457,7 @@ coach_gender_more <- function(x, y1, y2, g){
 }
 
 
-allgames6 <- allgames5 %>%
+allgames6 <- allgames4 %>%
   mutate(season = ifelse(month(Date) < 7, paste(year(Date)-1, year(Date), sep = "-"), paste(year(Date), year(Date) + 1, sep = "-"))) %>%
   inner_join(coach_data_home, by = c("Home_Team" = "team_home", "season" = "season_home")) %>%
   inner_join(coach_data_away, by = c("Away_Team" = "team_away", "season" = "season_away")) %>%
